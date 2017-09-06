@@ -1,3 +1,8 @@
+/**
+ * zGallery v 1.0.0
+ * Author: Igor Zhuravlev
+ */
+
 (function ($, window, document, undefined) {
 
     var pluginName = "zGallery";
