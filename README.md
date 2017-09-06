@@ -1,4 +1,4 @@
-zGallery is a popup slider gallery plugin, simple analogue of Fancybox/Lightbox. 
+**zGallery** is a popup slider gallery plugin, simple analogue of Fancybox/Lightbox. 
 
 # Installation
 
