@@ -1,13 +1,13 @@
-How to install
+h1 How to install
 
-Step 1: Link required files:
+h3 Step 1: Link required files:
 ```
 <link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.touchSwipe.min.js"></script>
 <script src="js/jquery.zgallery.js"></script>
 ```
-Step 2: Create HTML markup:
+h3 Step 2: Create HTML markup:
 ```
 <ul class="thumbs clearfix">
     <li>
@@ -53,7 +53,7 @@ Step 2: Create HTML markup:
 </ul>
 ```
 
-Step 3: Call the plugin: 
+h3 Step 3: Call the plugin: 
 ```
 $('body').zGallery();
 ```
