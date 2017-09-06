@@ -1,14 +1,16 @@
-# How to install
+zGallery is a popup slider gallery plugin, simple analogue of Fancybox/Lightbox. 
+
+# Installation
 
 ### Step 1: Link required files:
 ```html
-<!-- The plugin styles -->
+<!-- zGallery styles -->
 <link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
 <!-- jQuery library -->
 <script src="js/jquery.min.js"></script>
 <!-- TouchSwipe plugin to handle swipe events -->
 <script src="js/jquery.touchSwipe.min.js"></script>
-<!-- The plugin script -->
+<!-- zGallery script -->
 <script src="js/jquery.zgallery.js"></script>
 ```
 ### Step 2: Create HTML markup:
