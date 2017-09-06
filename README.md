@@ -8,6 +8,10 @@
 <script src="js/jquery.zgallery.js"></script>
 ```
 ### Step 2: Create HTML markup:
+
+The list of preview images/elements, each having 
+1) 'data-zgallery' attribute - the sign that this element is to initiate the gallery. To combine several elements in a gallery, give them the same value of this attribute
+2) 'data-src' attribute containing the link to the source element for popup content
 ```
 <ul class="thumbs clearfix">
     <li>
@@ -52,6 +56,8 @@
     </li>
 </ul>
 ```
+
+
 
 ### Step 3: Call the plugin: 
 ```
