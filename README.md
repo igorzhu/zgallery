@@ -1,9 +1,10 @@
 # How to install
 
 ### Step 1: Link required files:
-```
+```html
 <!-- The plugin styles -->
 <link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
+<!-- jQuery library -->
 <script src="js/jquery.min.js"></script>
 <!-- TouchSwipe plugin to handle swipe events -->
 <script src="js/jquery.touchSwipe.min.js"></script>
@@ -15,7 +16,7 @@
 The list of preview images/elements, each having two obligatory attributes:  
 1) 'data-zgallery' attribute - the sign that this element is to initiate the gallery. To combine several elements in a gallery, give them the same value of this attribute
 2) 'data-src' attribute containing the link to the source element for popup content
-```
+```html
 <ul class="thumbs clearfix">
     <li>
         <a data-zgallery="gallery1" data-src="#popup-1" href="javascript:;">
@@ -39,7 +40,7 @@ The list of preview images/elements, each having two obligatory attributes:
 
 The list of sources elements for popups content, each having obligatory id attribute:
 
-```
+```html
 <ul class="popups">
     <li id="popup-1">
         <img src="img/popups/popup-pic1.jpg" />
@@ -56,6 +57,6 @@ The list of sources elements for popups content, each having obligatory id attri
 
 
 ### Step 3: Call the plugin: 
-```
+```javascript
 $('body').zGallery();
 ```
