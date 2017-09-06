@@ -1,0 +1,168 @@
+.clearfix:after {
+    content: '';
+    display: block;
+    clear: both;
+    float: none;
+}
+
+.popups {
+    display: none;
+}
+
+.thumbs li {
+    float: left;
+    display: block;
+    list-style-type: none;
+    margin: 10px;
+}
+
+/* zGallery styles */
+
+
+* {
+    box-sizing: border-box;
+}
+
+.zgallery__container {
+    position: fixed;
+    z-index: 9991;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.zgallery__overlay {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background: #000;
+    opacity: 0.8;
+}
+
+.zgallery__inner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.zgallery__stage {
+    z-index: 9997;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+}
+
+.zgallery__stage-inner-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.zgallery__stage-inner {
+    position: relative;
+}
+
+.zgallery__stage:before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    width: 0;
+}
+
+.zgallery__stage-inner:after {
+    content: '';
+    display: block;
+    clear: both;
+    float: none;
+}
+
+.zgallery__slide {
+    float: left;
+    height: 100%;
+}
+
+
+
+.zgallery__slide > * {
+    position: relative;
+}
+
+.zgallery__slide > li {
+    display: block;
+    list-style-type: none;
+}
+
+.zgallery__close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    text-decoration: none;
+    color: #000;
+    width: 30px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    padding: 5px;
+
+}
+
+.zgallery__close:after {
+    content: '×';
+    display: block;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -11px;
+    margin-top: -9px;
+    font-size: 40px;
+    font-weight: bold;
+    line-height: 20px;
+
+}
+
+.zgallery__arrow {
+    position: absolute;
+    top: 50%;
+    width: 19px;
+    height: 35px;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    z-index: 99995;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: opacity .25s;
+    margin-top: -17px;
+    background-size: 19px 35px;
+    background: url(../img/arrow-r.png) no-repeat 0 0;
+}
+
+.zgallery__arrow-left {
+    transform: scaleX(-1);
+    left: 10px;
+}
+
+.zgallery__arrow-right {
+    right: 20px;
+}
+
+.zgallery__slide_transitioning {
+    transform: translateX(-100%);
+    transition: transform 1s;
+}
