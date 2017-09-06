@@ -1,14 +1,15 @@
 How to install
 
 Step 1: Link required files:
-```<link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
+```
+<link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.touchSwipe.min.js"></script>
-<script src="js/jquery.zgallery.js"></script>```
-
+<script src="js/jquery.zgallery.js"></script>
+```
 Step 2: Create HTML markup:
-
-```<ul class="thumbs clearfix">
+```
+<ul class="thumbs clearfix">
     <li>
         <a data-zgallery="gallery1" data-src="#popup-1" href="javascript:;">
             <img src="img/thumbs/qna-1.jpg" />
@@ -49,9 +50,10 @@ Step 2: Create HTML markup:
             <img src="img/thumbs/qna-8.jpg" />
         </a>
     </li>
-</ul>```
-
+</ul>
+```
 
 Step 3: Call the plugin: 
-
+```
 $('body').zGallery();
+```
