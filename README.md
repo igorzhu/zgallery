@@ -36,6 +36,7 @@ The list of preview images/elements, each having two obligatory attributes:
 
 The list of sources elements for popups content, each having obligatory id attribute:
 
+```
 <ul class="popups">
     <li id="popup-1">
         <img src="img/popups/popup-pic1.jpg" />
@@ -48,7 +49,7 @@ The list of sources elements for popups content, each having obligatory id attri
         <img src="img/popups/popup-pic8.jpg" />
     </li>
 </ul>
-
+```
 
 
 ### Step 3: Call the plugin: 
