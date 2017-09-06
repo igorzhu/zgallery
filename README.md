@@ -2,9 +2,12 @@
 
 ### Step 1: Link required files:
 ```
+<!-- The plugin styles -->
 <link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
 <script src="js/jquery.min.js"></script>
+<!-- TouchSwipe plugin to handle swipe events -->
 <script src="js/jquery.touchSwipe.min.js"></script>
+<!-- The plugin script -->
 <script src="js/jquery.zgallery.js"></script>
 ```
 ### Step 2: Create HTML markup:
