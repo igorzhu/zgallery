@@ -39,7 +39,8 @@
     bottom: 0px;
     left: 0px;
     background: #000;
-    opacity: 0.8;
+    opacity: 0.9;
+    display: none;
 }
 
 .zgallery__inner {

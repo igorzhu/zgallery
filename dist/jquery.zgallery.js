@@ -102,6 +102,8 @@
 
             self.setup.container.prependTo('body');
 
+            $('.zgallery__overlay').fadeIn(250);
+
 
             // Заполняем контейнер слайдами:
 

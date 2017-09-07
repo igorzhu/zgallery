@@ -1,5 +1,5 @@
 /**
- * zGallery v 1.0.0
+ * zGallery v 1.0.1
  * Author: Igor Zhuravlev
  */
 
@@ -101,6 +101,8 @@
             self.setup.container = $('<div class="zgallery__container" id="zgallery-container' + self.setup.counter + '"><div class="zgallery__overlay"></div><div class="zgallery__inner"><div class="zgallery__navigation"><button class="zgallery__arrow zgallery__arrow-left"></button><button class="zgallery__arrow zgallery__arrow-right"></button></div><div class="zgallery__stage"><div class="zgallery__stage-inner-wrapper"><div class="zgallery__stage-inner"></div></div></div></div></div>');
 
             self.setup.container.prependTo('body');
+
+            $('.zgallery__overlay').fadeIn(250);
 
 
             // Заполняем контейнер слайдами:
