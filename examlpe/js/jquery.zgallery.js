@@ -1,5 +1,5 @@
 /**
- * zGallery v 1.0.1
+ * zGallery v 1.1.0
  * Author: Igor Zhuravlev
  */
 
@@ -12,11 +12,15 @@
         this.element = $(element);
 
         this.settings = $.extend({
-            width: '',
             midW: 1000,  // при ширине меньше этой начинается адаптив
             mobW: 650,   // при ширине меньше этой показывается мобильная версия (в частности, касается поп-апов)
-            isMobile: false, // информация о том, соответствует данная ширина экрана мобильной версии
-            transition: 750 // время прокрутки слайда (ms)
+            transition: 750, // время прокрутки слайда (ms)
+            urlHashListener: false, // отслеживать изменение url при переключении слайдов
+            search: false,  // формировать ссылку на основе параметров, напр.: ?page=2
+            onSlideShown: null,
+            onPopupOpen: null,
+            beforeClosed: null,
+            afterClosed: null
         }, options);
 
         this.init();
@@ -25,16 +29,21 @@
     $.extend(zGallery.prototype, {
 
         setup: {
+            isMobile: false,         // информация о том, соответствует данная ширина экрана мобильной версии
             counter: 0,              // счётчик запуска экземпляров плагина
             container: '',           // контейнер для поп-апа
             currentPopupSource: '',  // элемент-источник контента для слайда, соответствующий ссылке, по которой сделан клик
             ppSourceArray : [],
-            currentSlide: 0,         // индекс номер текущего слайда (отсчёт ведётся с 0)
+            currentSlide: 1,         // индекс номер текущего слайда (отсчёт ведётся с 1)
             currentSlideId: '',      // id текущего слайда
+            currentSourceId: '',     // id источника текущего слайда
             ppSourceContainer: '',   // контейнер элементов-источников контента для галереи
             slideW: 0,               // ширина слайда
             shift: 0,                // смещение полотна слайдера
             slidesN: 0,              // число слайдов в галерее (не считая клонов)
+            shiftNumber: 0,          // число слайдов, на которое нужно сместить полотно
+            bandWidth: 1,            // число слайдов в полотне (включая клоны),
+            scrollTop: 0,            // позиция скроллбара страницы перед открытием поп-апа
             host: ''                 // исходный адрес страницы
         },
 
@@ -46,7 +55,13 @@
 
             var winW = $(window).outerWidth();
 
+            if (winW <= self.setup.mobW) {
+                self.setup.isMobile = true;
+            }
+
             self.events();
+
+            self.resize();
 
             return true;
 
@@ -61,11 +76,22 @@
 
             if (slideAlias)
                 {
-                    var slideData = slideAlias.split('_zg_');
+                    if (self.setup.search){
 
-                    self.setup.currentPopupSource = $('#' + slideData[1]);
+                        var slideData = slideAlias.split('page=');
 
-                    galleryName = slideData[0];
+                        self.setup.currentPopupSource = $('#' + slideData);
+
+                        galleryName = $('[data-src="#' + slideData + '"]').data('zgallery');
+                    }
+
+                    else {
+                        var slideData = slideAlias.split('_zg_');
+
+                        self.setup.currentPopupSource = $('#' + slideData[1]);
+
+                        galleryName = slideData[0];
+                    }
 
                     if (self.setup.currentPopupSource.length < 1 || $('[data-zgallery=' + galleryName + ']').length < 1)
                         {
@@ -88,10 +114,7 @@
                     galleryName = elem.data('zgallery');
                 }
 
-
             self.setup.ppSourceContainer = self.setup.currentPopupSource.parent();
-
-
 
             var linksGallery = $('[data-zgallery=' + galleryName + ']');
 
@@ -115,9 +138,9 @@
 
                 if (ppSource.attr('id') === self.setup.currentPopupSource.attr('id'))
                     {
-                        self.setup.currentSlide = i; // Определяем индекс текущего слайда
+                        self.setup.currentSlide = i + 1; // currentSlide исчисляется с 1, а i - c 0
                         self.setup.currentSlideId = idTemplate;  // Определяем id текущего слайда
-
+                        self.setup.currentSourceId = $(this).data('src').slice(1);
                         ppSource.appendTo('.zgallery__stage-inner', self.setup.container).wrap('<div class="zgallery__slide zgallery__slide_active" id="' + idTemplate + '"></div>');
                     }
 
@@ -136,22 +159,36 @@
 
             self.setup.slidesN = $('.zgallery__slide').length; // число слайдов без клонов
 
-
             // Создаём клоны первого и последнего элементов галереи:
 
-            $('.zgallery__slide:last-child').clone().addClass('zgallery__slide_clone').removeAttr('id').prependTo('.zgallery__stage-inner');
-            $('.zgallery__slide:nth-child(2)').clone().addClass('zgallery__slide_clone').removeAttr('id').appendTo('.zgallery__stage-inner');
+            if (self.setup.slidesN > 1) {
 
+                $('.zgallery__slide:last-child').clone().addClass('zgallery__slide_clone').removeAttr('id').prependTo('.zgallery__stage-inner');
+                $('.zgallery__slide:nth-child(2)').clone().addClass('zgallery__slide_clone').removeAttr('id').appendTo('.zgallery__stage-inner');
+
+                self.setup.bandWidth = linksGallery.length + 2;
+                self.setup.shiftNumber = self.setup.currentSlide;
+            } else {
+                self.setup.bandWidth = linksGallery.length;
+                self.setup.shiftNumber = self.setup.currentSlide - 1;
+            }
 
             // Смещаем полотно слайдера так, чтобы отображался текущий слайд (в соответствии с кликнутой ссылкой):
 
-            self.setup.shift = ((self.setup.currentSlide + 1) * self.setup.slideW) * -1;
+            self.setup.shift = (self.setup.shiftNumber * self.setup.slideW) * -1;
 
-            $('.zgallery__stage-inner').width(self.setup.slideW * (linksGallery.length + 2)).css({left: self.setup.shift});
+            console.log('self.setup.shiftNumber = ' + self.setup.shiftNumber);
+
+            $('.zgallery__stage-inner').width(self.setup.slideW * self.setup.bandWidth).css({left: self.setup.shift});
+
 
             if (isSlideExist)
                 {
-                    window.location.hash = 'z_' + self.setup.currentSlideId;
+                    if (self.setup.search){
+                        window.history.replaceState( {} , '', '?page=' + self.setup.currentSourceId );
+                    } else {
+                        window.location.hash = 'z_' + self.setup.currentSlideId;
+                    }
                 }
 
             onOpened(); //callback-функция, вызываемая после открытия поп-апа
@@ -175,7 +212,7 @@
 
                 $('.zgallery__slide').removeClass('zgallery__slide_active');
 
-                var activeSlide = $('.zgallery__slide:nth-child(' + (currentSlide + 2) +')');
+                var activeSlide = $('.zgallery__slide:nth-child(' + (currentSlide + 1) +')');
 
                 activeSlide.addClass('zgallery__slide_active');
 
@@ -184,15 +221,22 @@
                 window.location.hash = 'z_' + self.setup.currentSlideId;
             }
 
+            if (self.setup.slidesN < 2) {
+                // Если в галерее только 1 слайд, запрещаем слайдинг
+                return;
+            }
+
             if (slideLeft)
                 {
                     self.setup.shift += self.setup.slideW;
 
-                    if (self.setup.currentSlide > 0 )
+                    if (self.setup.currentSlide > 1 )
                         {
                             sliderBand.animate({
                                 left: self.setup.shift
-                            }, self.setup.transition);
+                            }, self.setup.transition, function(){
+                                    self.onSlideShown.apply(self);
+                        });
 
                             self.setup.currentSlide--;
 
@@ -212,9 +256,11 @@
                                 sliderBand.css({
                                     left: self.setup.shift
                                 });
+
+                                self.onSlideShown.apply(self);
                             });
 
-                            self.setup.currentSlide = self.setup.slidesN - 1;
+                            self.setup.currentSlide = self.setup.slidesN;
 
                             markActiveSlideAndMakeURL (self.setup.currentSlide);
                         }
@@ -224,11 +270,13 @@
                 {
                     self.setup.shift -= self.setup.slideW;
 
-                    if( self.setup.currentSlide < self.setup.slidesN - 1)
+                    if( self.setup.currentSlide < self.setup.slidesN)
                         {
                             sliderBand.animate({
                                 left: self.setup.shift
-                            }, self.setup.transition);
+                            }, self.setup.transition, function(){
+                                self.onSlideShown.apply(self);
+                            });
 
                             self.setup.currentSlide++;
 
@@ -248,9 +296,11 @@
                                 sliderBand.css({
                                     left: self.setup.shift
                                 });
+
+                                self.onSlideShown.apply(self);
                             });
 
-                            self.setup.currentSlide = 0;
+                            self.setup.currentSlide = 1;
 
                             markActiveSlideAndMakeURL (self.setup.currentSlide);
                         }
@@ -269,12 +319,16 @@
 
                 swipeLeft:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
 
-                   self.sliding(null, 'swipeRight', null);
+                    self.sliding(null, 'swipeRight', null);
+
+                    console.log('swipe left');
                 },
 
                 swipeRight:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
 
                     self.sliding(null, 'swipeLeft', null);
+
+                    console.log('swipe right');
                 }
             });
         },
@@ -287,9 +341,20 @@
 
             self.element.on('click', '[data-zgallery]', function(){
 
+                if(navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+                    self.setup.scrollTop = $('body').scrollTop() || $('html').scrollTop();
+                    console.log('apple');
+                } else {
+                    self.setup.scrollTop = $('html').scrollTop() || $('body').scrollTop();
+                }
+
                 self.open($(this), null, function() {
 
                     self.swiping();
+
+                    self.onPopupOpen();
+
+                    self.onSlideShown();
 
                 });
 
@@ -298,20 +363,43 @@
 
             /* Open gallery by URL */
 
+            if (self.setup.search){
 
-            var hash = window.location.hash;
+                var search = window.location.search;
 
-            if (/^#z_/.test(hash))
-               {
-                   var slideAlias = hash.slice(3);
+                if (/page=/.test(search)){
+                    var slideAlias = search.split('page=')[1];
 
-                   self.open(null, slideAlias, function() {
+                    self.open(null, slideAlias, function() {
 
-                       self.swiping();
+                        self.swiping();
 
-                   });
-               };
+                        self.onPopupOpen();
 
+                        self.onSlideShown();
+                    });
+                }
+            }
+
+            else {
+
+                var hash = window.location.hash;
+
+                if (/^#z_/.test(hash))
+                {
+                    var slideAlias = hash.slice(3);
+
+                    self.open(null, slideAlias, function() {
+
+                        self.swiping();
+
+                        self.onPopupOpen();
+
+                        self.onSlideShown();
+
+                    });
+                };
+            }
 
 
             /* Sliding */
@@ -358,9 +446,47 @@
             });
         },
 
+        resize: function(){
+
+            var self = this;
+
+            $(window).on('resize', function(){
+
+                var winW = $(window).outerWidth();
+
+                self.setup.slideW = $('.zgallery__slide').outerWidth();
+
+                $('.zgallery__stage').width(self.setup.slideW);
+
+                // Смещаем полотно слайдера так, чтобы отображался текущий слайд (в соответствии с кликнутой ссылкой):
+
+                self.setup.shift = (self.setup.shiftNumber * self.setup.slideW) * -1;
+
+                $('.zgallery__stage-inner').width(self.setup.slideW * self.setup.bandWidth).css({left: self.setup.shift});
+
+                if (winW <= self.setup.mobW) {
+
+                    if (self.setup.isMobile == false){
+                        self.setup.isMobile = true;
+                    }
+                }
+
+                else if (winW > self.setup.mobW){
+
+                    if (self.setup.isMobile == true){
+                        self.setup.isMobile = false;
+                    }
+                }
+
+            });
+
+        },
+
         close: function(beforeClose, afterClose) {
 
             var self = this;
+
+            self.beforeClosed();
 
             if (beforeClose)
                 {
@@ -376,12 +502,68 @@
                 });
             });
 
-            window.location.hash = '';
+            if (self.setup.search){
+                window.history.replaceState( {} , '', '/');
+
+            } else {
+                window.location.hash = '';
+            }
+
+
+
+            if(navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+                $('body').scrollTop(self.setup.scrollTop);
+                $('html').scrollTop(self.setup.scrollTop);
+            } else {
+                $('body').scrollTop(self.setup.scrollTop);
+                $('html').scrollTop(self.setup.scrollTop);
+            }
 
             if (afterClose)
                 {
                     afterClose();
                 }
+
+            self.afterClosed();
+        },
+
+        onSlideShown: function(){
+
+            var self = this;
+
+            $('.zgallery__slide_active').waitForImages(function() {
+
+                console.log('currentSlide = ' + self.setup.currentSlide);
+
+                if (self.setup.onSlideShown){
+                    self.setup.onSlideShown();
+                }
+            });
+        },
+
+        onPopupOpen: function(){
+
+            var self = this;
+
+            if (self.setup.onPopupOpen){
+                self.setup.onPopupOpen();
+            }
+        },
+
+        beforeClosed: function(){
+            var self = this;
+
+            if (self.setup.beforeClosed){
+                self.setup.beforeClosed();
+            }
+        },
+
+        afterClosed: function(){
+            var self = this;
+
+            if (self.setup.afterClosed){
+                self.setup.afterClosed();
+            }
         }
     });
 
@@ -395,8 +577,6 @@
         return this;
     };
 
-
-    $('body').zGallery();
 
 
 })(jQuery, window, document);
