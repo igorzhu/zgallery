@@ -44,7 +44,8 @@
             shiftNumber: 0,          // число слайдов, на которое нужно сместить полотно
             bandWidth: 1,            // число слайдов в полотне (включая клоны),
             scrollTop: 0,            // позиция скроллбара страницы перед открытием поп-апа
-            host: ''                 // исходный адрес страницы
+            host: '',                 // исходный адрес страницы
+            isPopupOpen: false
         },
 
         init: function () {
@@ -58,6 +59,8 @@
             if (winW <= self.setup.mobW) {
                 self.setup.isMobile = true;
             }
+
+            self.setup.counter++;
 
             self.events();
 
@@ -177,8 +180,6 @@
 
             self.setup.shift = (self.setup.shiftNumber * self.setup.slideW) * -1;
 
-            console.log('self.setup.shiftNumber = ' + self.setup.shiftNumber);
-
             $('.zgallery__stage-inner').width(self.setup.slideW * self.setup.bandWidth).css({left: self.setup.shift});
 
 
@@ -190,6 +191,8 @@
                         window.location.hash = 'z_' + self.setup.currentSlideId;
                     }
                 }
+
+            self.setup.isPopupOpen = true;
 
             onOpened(); //callback-функция, вызываемая после открытия поп-апа
 
@@ -320,17 +323,26 @@
                 swipeLeft:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
 
                     self.sliding(null, 'swipeRight', null);
-
-                    console.log('swipe left');
                 },
 
                 swipeRight:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
 
                     self.sliding(null, 'swipeLeft', null);
-
-                    console.log('swipe right');
                 }
             });
+        },
+
+        mousewheel: function(){
+
+            var self = this;
+
+            $('.zgallery__slide').mousewheel(function (event, delta) {
+
+                var scrollDirection = ( delta > 0 ) ? 'swipeLeft' : 'swipeRight';
+
+                self.sliding(null, scrollDirection, null);
+            });
+
         },
 
         events: function() {
@@ -341,23 +353,26 @@
 
             self.element.on('click', '[data-zgallery]', function(){
 
-                if(navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
-                    self.setup.scrollTop = $('body').scrollTop() || $('html').scrollTop();
-                    console.log('apple');
-                } else {
-                    self.setup.scrollTop = $('html').scrollTop() || $('body').scrollTop();
+                if (!self.setup.isPopupOpen){
+                    // Формируем слайдер только в том случае, если он уже не открыт. Страховка от открытия новых экземпляров слайдера при нажатии на Enter и повторного/многократного срабатывания события click.
+
+                    if(navigator.userAgent.match(/(iPod|iPhone|iPad)/)) {
+                        self.setup.scrollTop = $('body').scrollTop() || $('html').scrollTop();
+                    } else {
+                        self.setup.scrollTop = $('html').scrollTop() || $('body').scrollTop();
+                    }
+
+                    self.open($(this), null, function() {
+
+                        self.swiping();
+
+                        self.mousewheel();
+
+                        self.onPopupOpen();
+
+                        self.onSlideShown();
+                    });
                 }
-
-                self.open($(this), null, function() {
-
-                    self.swiping();
-
-                    self.onPopupOpen();
-
-                    self.onSlideShown();
-
-                });
-
             });
 
 
@@ -373,6 +388,8 @@
                     self.open(null, slideAlias, function() {
 
                         self.swiping();
+
+                        self.mousewheel();
 
                         self.onPopupOpen();
 
@@ -392,6 +409,8 @@
                     self.open(null, slideAlias, function() {
 
                         self.swiping();
+
+                        self.mousewheel();
 
                         self.onPopupOpen();
 
@@ -519,6 +538,8 @@
                 $('html').scrollTop(self.setup.scrollTop);
             }
 
+            self.setup.isPopupOpen = false;
+
             if (afterClose)
                 {
                     afterClose();
@@ -532,8 +553,6 @@
             var self = this;
 
             $('.zgallery__slide_active').waitForImages(function() {
-
-                console.log('currentSlide = ' + self.setup.currentSlide);
 
                 if (self.setup.onSlideShown){
                     self.setup.onSlideShown();
@@ -576,8 +595,6 @@
         });
         return this;
     };
-
-
 
 })(jQuery, window, document);
 

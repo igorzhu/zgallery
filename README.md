@@ -7,9 +7,11 @@
 <!-- zGallery styles -->
 <link href="css/jquery.zgallery.css" rel="stylesheet" type="text/css" />
 <!-- jQuery library -->
-<script src="js/jquery.min.js"></script>
+<script src="dist/vendor/jquery.min.js"></script>
 <!-- TouchSwipe plugin to handle swipe events -->
-<script src="js/jquery.touchSwipe.min.js"></script>
+<script src="dist/vendor/jquery.touchSwipe.min.js"></script>
+<!-- Mousewheel plugin to handle mouse wheel events -->
+<script src="dist/vendor/jquery.mousewheel.js"></script>
 <!-- zGallery script -->
 <script src="js/jquery.zgallery.js"></script>
 ```
@@ -60,5 +62,5 @@ The list of sources elements for popups content, each having obligatory id attri
 
 ### Step 3: Call the plugin: 
 ```javascript
-$('body').zGallery();
+$('.thumbs').zGallery();
 ```
