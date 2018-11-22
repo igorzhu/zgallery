@@ -1,5 +1,5 @@
 /**
- * zGallery v 1.1.0
+ * zGallery v 1.1.3
  * Author: Igor Zhuravlev
  */
 
@@ -318,31 +318,36 @@
 
             var self = this;
 
-            $('.zgallery__slide').swipe({
+            if ($.fn.swipe){
+                $('.zgallery__slide').swipe({
 
-                swipeLeft:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
+                    swipeLeft:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
 
-                    self.sliding(null, 'swipeRight', null);
-                },
+                        self.sliding(null, 'swipeRight', null);
+                    },
 
-                swipeRight:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
+                    swipeRight:function(event, distance, duration, fingerCount, fingerData, currentDirection) {
 
-                    self.sliding(null, 'swipeLeft', null);
-                }
-            });
+                        self.sliding(null, 'swipeLeft', null);
+                    }
+                });
+            }
         },
 
         mousewheel: function(){
 
             var self = this;
 
-            $('.zgallery__slide').mousewheel(function (event, delta) {
+            if ($.fn.mousewheel){
+                $('.zgallery__slide').mousewheel(function (event, delta) {
 
-                var scrollDirection = ( delta > 0 ) ? 'swipeLeft' : 'swipeRight';
+                    event.preventDefault();
 
-                self.sliding(null, scrollDirection, null);
-            });
+                    var scrollDirection = ( delta > 0 ) ? 'swipeLeft' : 'swipeRight';
 
+                    self.sliding(null, scrollDirection, null);
+                });
+            }
         },
 
         events: function() {
